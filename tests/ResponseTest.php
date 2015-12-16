@@ -8,12 +8,18 @@
 
 class CitiesResponseTest extends PHPUnit_Framework_TestCase
 {
+
+    public function testSetupWorking()
+    {
+        $this->assertEquals(true, true);
+        $this->assertFalse(false);
+    }
+
     public function testCitiesListContainsAmsterdam()
     {
         $uri = "http://localhost:8000";
-        $response = http_get($uri, null, $info);
+        $info = $response = file_get_contents($uri);
 
-        $this->assertEquals("application/json", $info["content_type"]);
-        $this->assertContains("Amsterdam", $response);
+        $this->assertContains("Amsterdam", $info);
     }
 }
