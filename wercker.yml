@@ -1,13 +1,31 @@
-box: stuvia/wercker-php
+box: tutum/lamp
 build:
   steps:
+
     - script:
-        name: install dependencies
+        name: Update enviroment dependencies
         code: |-
-            composer install --no-interaction
+          sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends -y install curl php5-cli php5-curl git
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+
     - script:
-        name: Serve application
-        code: php -S localhost:8000 >> /dev/null &
+        name: Install Composer dependencies
+        code: |-
+          rm -rf ./vendor
+          /usr/bin/composer install --no-interaction --prefer-source
+
+    - script:
+        name: Apache site install
+        code: |-
+          sudo chmod -R 755 /var/www
+          sudo cp -r ./ /var/www/example.lan/
+          sudo chown -R $USER:$USER /var/www/example.lan/
+          sudo cp ./config/example.lan.conf /etc/apache2/sites-available/example.lan.conf
+          sudo a2ensite example.lan.conf
+          sudo cp -fr ./config/hosts /etc/hosts
+          sudo service apache2 restart
+
     - script:
         name: PHPUnit integration tests
-        code: ./vendor/bin/phpunit --configuration phpunit.xml
+        code: |-
+          ./vendor/bin/phpunit --configuration phpunit.xml

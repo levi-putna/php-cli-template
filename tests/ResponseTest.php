@@ -17,7 +17,7 @@ class CitiesResponseTest extends PHPUnit_Framework_TestCase
 
     public function testCitiesListContainsAmsterdam()
     {
-        $uri = "http://localhost:8000";
+        $uri = "http://example.lan";
         $info = $response = file_get_contents($uri);
 
         $this->assertContains("Amsterdam", $info);
