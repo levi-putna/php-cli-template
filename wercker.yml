@@ -1,11 +1,12 @@
-box: tutum/lamp
+box: consynki/yii2
+
 build:
   steps:
 
     - script:
         name: Update enviroment dependencies
         code: |-
-          sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends -y install curl php5-cli php5-curl git
+          ls $WERCKER_ROOT
           curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
     - script:
@@ -24,6 +25,15 @@ build:
           sudo a2ensite example.lan.conf
           sudo cp -fr ./config/hosts /etc/hosts
           sudo service apache2 restart
+
+    - script:
+        name: Create database
+        code: |-
+          echo "=> Check database status"
+          dpkg --get-selections | grep mysql
+          echo "=> Show db tables"
+          mysql -uroot -e "SHOW DATABASES;"
+          mysql -uroot -e "CREATE DATABASE IF NOT EXISTS test"
 
     - script:
         name: PHPUnit integration tests
